@@ -13,14 +13,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const context = await browser.newContext();
 
-    let requests : string[] = []
+    const rum : any[] = []
     // Listen for new pages
     context.on('page', async (page) => {
       console.log('New page created');
 
       // Capture all requests on the new page
-      page.on('request', (request) => {
-        requests.push(request.url())
+      page.on('response', (re) => {
+        if(re.url().includes("token")){
+          rum.push(re.headers())
+        }
       });
 
       // Optional: Wait until the page is fully loaded
@@ -43,14 +45,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader("Cache-Control", "max-age=3600, public");
     res.setHeader("vary", "Accept");
     
-    res.status(200).json({ url : "https://open.spotify.com", requests  })
+    res.status(200).json({ url : "https://open.spotify.com", rum  })
   } catch (err) {
     
 
     const logStr = "Aghhhhh";
     const sendData = new Response(true, logStr, {
-      // error: err.message
-      keys : Object.keys(process.env)
+      error: err.message
     });
 
     res.status(400).send(sendData);

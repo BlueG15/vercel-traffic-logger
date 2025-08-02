@@ -1,5 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { chromium } from 'playwright'
+import path = require("path");
+
+const fs = require("fs")
 
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 
@@ -27,7 +30,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     res.status(200).json({ title, length: content.length })
   } catch (err) {
-    const logStr = "AHhhhhh";
+    const files = fs.readdirSync('./node_modules/.playwright')
+    console.log(files)
+
+    const logStr = "Aaaa";
     const sendData = new Response(true, logStr, {
       error: err.message,
     });

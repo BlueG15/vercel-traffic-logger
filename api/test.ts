@@ -4,7 +4,7 @@ import path = require("path");
 
 const fs = require("fs")
 
-const p = path.join(process.cwd(), "node_modules", "playwright-core") //we look for the folder .local-browsers
+const p = path.join(process.cwd(), "node_modules", "playwright-core") //we look for the folder .local-browsers 
 const files = fs.readdirSync(path.join(p))
 
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";

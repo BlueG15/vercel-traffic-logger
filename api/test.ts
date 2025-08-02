@@ -19,9 +19,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.log('New page created');
 
       // Capture all requests on the new page
-      page.on('response', (re) => {
+      page.on('response', async (re) => {
         if(re.url().includes("token")){
-          rum.push(re.headers())
+          rum.push(await re.json())
         }
       });
 

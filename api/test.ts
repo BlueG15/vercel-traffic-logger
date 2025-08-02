@@ -10,6 +10,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
     })
     const page = await browser.newPage()
+    
     await page.goto('https://example.com')
 
     const title = await page.title()

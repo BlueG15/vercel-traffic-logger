@@ -15,7 +15,7 @@
     "@vercel/node": "^2.9.6",
     "cors": "^2.8.5",
     "nodejs": "file:",
-    "playwright": "^1.54.2",
+    "playwright-core": "^1.54.2",
     "typescript": "^5.4.5"
   }
 }

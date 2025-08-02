@@ -1,24 +1,40 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { chromium } from 'playwright-core'
+import { getENVKey } from "./utils";
 
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-
-    //throwaway token, so its fine
+    const secret = getENVKey("BROWSER_LESS_KEY")
     const browser = await chromium.connectOverCDP(
-      `wss://production-sfo.browserless.io?token=2SnLFcPKJV9OPhwfdc108912e370aa2561772989f03d68765`
+      `wss://production-sfo.browserless.io?token=` + secret
     );
 
-    const page = await browser.newPage()
+    const context = await browser.newContext();
 
-    await page.goto('https://example.com')
+    let requests : string[] = []
+    // Listen for new pages
+    context.on('page', async (page) => {
+      console.log('New page created');
 
-    const title = await page.title()
-    const content = await page.content()
+      // Capture all requests on the new page
+      page.on('request', (request) => {
+        requests.push(request.url())
+      });
 
-    await browser.close()
+      // Optional: Wait until the page is fully loaded
+      await page.waitForLoadState();
+    });
+
+    const page = await context.newPage();
+    await page.goto('https://open.spotify.com');
+
+    // Keep the script alive for demo purposes
+    await new Promise(r => setTimeout(r, 5000));
+
+    await browser.close();
+
 
     
     //# Handle CORS
@@ -27,7 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader("Cache-Control", "max-age=3600, public");
     res.setHeader("vary", "Accept");
     
-    res.status(200).json({ title, length: content.length})
+    res.status(200).json({ url : "https://open.spotify.com", requests  })
   } catch (err) {
     
 

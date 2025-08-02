@@ -4,7 +4,7 @@ import path = require("path");
 
 const fs = require("fs")
 
-const files = fs.readdirSync('../node_modules/.playwright')
+const files = fs.readdirSync(path.join(process.cwd()))
 
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 

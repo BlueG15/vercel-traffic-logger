@@ -1,1 +1,7 @@
-{ "version": 2, "rewrites": [{ "source": "/(.*)", "destination": "/api" }] }
+{ 
+    "version": 2, 
+    "rewrites": [{ "source": "/(.*)", "destination": "/api" }],
+    "build" : {
+        "installCommand": "npm install; echo \"This works\"; PLAYWRIGHT_BROWSERS_PATH=0; npx playwright install"
+    }
+}

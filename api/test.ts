@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { chromium } from 'playwright'
+import { chromium } from 'playwright-core'
 
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 

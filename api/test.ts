@@ -4,7 +4,7 @@ import path = require("path");
 
 const fs = require("fs")
 
-const p = "/home/sbx_user1051/.cache"
+const p = path.join(process.cwd(), "node_modules", "playwright-core") //we look for the folder .local-browsers
 const files = fs.readdirSync(path.join(p))
 
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
@@ -31,7 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader("Cache-Control", "max-age=3600, public");
     res.setHeader("vary", "Accept");
     
-    res.status(200).json({ title, length: content.length })
+    res.status(200).json({ title, length: content.length, path : p, files })
   } catch (err) {
     
 

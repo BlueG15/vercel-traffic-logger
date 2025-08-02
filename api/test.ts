@@ -35,7 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (err) {
     
 
-    const logStr = "Aaaa";
+    const logStr = "Aghhhhh";
     const sendData = new Response(true, logStr, {
       error: err.message,
       path : p,

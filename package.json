@@ -17,5 +17,6 @@
     "nodejs": "file:",
     "playwright": "^1.54.2",
     "typescript": "^5.4.5"
+
   }
 }

@@ -49,7 +49,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const logStr = "Aghhhhh";
     const sendData = new Response(true, logStr, {
-      error: err.message
+      // error: err.message
+      keys : Object.keys(process.env)
     });
 
     res.status(400).send(sendData);

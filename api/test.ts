@@ -4,9 +4,12 @@ import path = require("path");
 
 const fs = require("fs")
 
+const files = fs.readdirSync('./node_modules/.playwright')
+
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+    console.dir(files, 10)
   try {
     const browser = await chromium.launch({
         headless: true,
@@ -30,8 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     res.status(200).json({ title, length: content.length })
   } catch (err) {
-    const files = fs.readdirSync('./node_modules/.playwright')
-    console.log(files)
+    
 
     const logStr = "Aaaa";
     const sendData = new Response(true, logStr, {

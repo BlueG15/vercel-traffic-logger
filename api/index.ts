@@ -3,8 +3,6 @@ import { getENVKey } from "./utils";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.status(200).send({
-    test: [
-      "APP_VERSION",
-    ].map((a) => getENVKey(a)),
+    test: [].map((a) => getENVKey(a)),
   });
 }

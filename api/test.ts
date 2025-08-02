@@ -4,7 +4,7 @@ import path = require("path");
 
 const fs = require("fs")
 
-const files = fs.readdirSync(path.join(process.cwd()))
+const files = fs.readdirSync(path.join(process.cwd(), "node_modules"))
 
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 
@@ -37,7 +37,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const logStr = "Aaaa";
     const sendData = new Response(true, logStr, {
       error: err.message,
-      path : process.cwd(),
+      path : path.join(process.cwd(), "node_modules"),
       files
     });
 

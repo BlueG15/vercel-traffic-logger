@@ -9,7 +9,6 @@ const files = fs.readdirSync(path.join(process.cwd()))
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-    console.dir(files, 10)
   try {
     const browser = await chromium.launch({
         headless: true,
@@ -38,9 +37,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const logStr = "Aaaa";
     const sendData = new Response(true, logStr, {
       error: err.message,
+      path : process.cwd(),
+      files
     });
 
-    console.error(err);
     res.status(400).send(sendData);
   }
 }

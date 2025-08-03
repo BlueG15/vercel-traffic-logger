@@ -1,15 +1,19 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { chromium } from 'playwright-core'
+import { firefox, LaunchOptions } from 'playwright-core'
 import { getENVKey } from "./utils";
 
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 
+type keys = keyof LaunchOptions
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
+
     const secret = getENVKey("BROWSER_LESS_KEY")
-    const browser = await chromium.connectOverCDP(
-      `wss://production-sfo.browserless.io?token=` + secret
-    );
+    const browser = await firefox.launch({
+      headless : true,
+      args : ["--no-sandbox"]
+    })
 
     const context = await browser.newContext();
 
@@ -33,7 +37,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await page.goto('https://open.spotify.com');
 
     // Keep the script alive for demo purposes
-    await new Promise(r => setTimeout(r, 5000));
+    await new Promise(r => setTimeout(r, 1000));
 
     await browser.close();
 

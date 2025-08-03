@@ -6,7 +6,7 @@ import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 import path from "path"
 import { readdirSync } from "fs";
 
-const files = path.join(process.cwd(), "node_modules", "playwright-core");
+const files = path.join(process.cwd(), "local-browser");
 const dirs = readdirSync(files);
 
 type keys = keyof LaunchOptions

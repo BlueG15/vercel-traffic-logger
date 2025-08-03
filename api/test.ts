@@ -3,16 +3,34 @@ import { firefox, LaunchOptions } from 'playwright-core'
 import { getENVKey } from "./utils";
 
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
+import path from "path"
+import { readdirSync } from "fs";
+
+const files = path.join(process.cwd(), "node_modules", "playwright-core", ".local-browsers");
+const dirs = readdirSync(files);
 
 type keys = keyof LaunchOptions
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  try {
 
+  let browser_path = ""
+  for(const d in dirs){
+    if(d.startsWith("firefox")){
+        browser_path = path.join(files, d)
+        break;
+    }
+  }
+
+  if(browser_path.length === 0){
+    res.status(500).send("Browser not found somehow")
+  }
+
+  try {
     const secret = getENVKey("BROWSER_LESS_KEY")
     const browser = await firefox.launch({
       headless : true,
-      args : ["--no-sandbox"]
+      args : ["--no-sandbox"],
+      executablePath : browser_path
     })
 
     const context = await browser.newContext();

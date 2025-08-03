@@ -6,7 +6,7 @@ import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 import path from "path"
 import { readdirSync } from "fs";
 
-const files = path.join(process.cwd(), "node_modules", "playwright-core", ".local-browsers");
+const files = path.join(process.cwd(), "node_modules", "playwright-core");
 const dirs = readdirSync(files);
 
 type keys = keyof LaunchOptions
@@ -22,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if(browser_path.length === 0){
-    res.status(500).send("Browser not found somehow")
+    res.status(500).send(`Browser not found somehow, dirs = ${JSON.stringify(dirs, null, 2)}`)
   }
 
   try {

@@ -2,6 +2,8 @@ const path = require("path")
 const fs = require("fs")
 const os = require("os")
 
+import { firefox } from "playwright-core"
+
 import {getPropertyNameFromReqObject} from "./utils"
 
 export default async function handler(req: any, res: any) {
@@ -14,10 +16,12 @@ export default async function handler(req: any, res: any) {
 
     if(doGetModule){
         try{
-            const modulePath = require.resolve(name)
-            res.status(200).send(modulePath);
+            const modulePath = require.resolve("playwright-core/indes.d.ts")
+            res.status(200).send(Object.keys(firefox), modulePath);
+            return;
         }catch(e){
-            res.status(200).send(e)
+            res.status(200).send(Object.keys(firefox), e)
+            return;
         }
     }
 
@@ -27,8 +31,10 @@ export default async function handler(req: any, res: any) {
         const dirs = fs.readdirSync(files);
 
         res.status(200).send(dirs)
+        return;
     } catch(e){
         res.status(200).send(`${files} is not a folder`)
+        return;
     }
 }
 

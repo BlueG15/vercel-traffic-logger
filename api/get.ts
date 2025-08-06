@@ -46,17 +46,24 @@ export default async function handler(req:  any, res: any) {
         const path = await downloadAndExtract();
         const time_download = performance.now()
 
-        let browser = await firefox.launch({
+        try{
+            let browser = await firefox.launch({
                 headless : true,
                 args : ["--no-sandbox"],
                 executablePath : path
             })
 
+            const context = await browser.newContext();
+        }catch(err){
+            res.status(200).send(new Response(true, "Something is wrong with the browser again", {
+                err : err.message
+            }))
+        }
         const url = getPropertyNameFromReqObject(req, "url") ?? "www.example.com"
         const match = getPropertyNameFromReqObject(req, "match") ?? "*"
 
-        const context = await browser.newContext();
 
+        const context = {} as any
         const captured : any[] = []
         // Listen for new pages
         context.on('page', async (page) => {
@@ -79,7 +86,7 @@ export default async function handler(req:  any, res: any) {
         // Keep the script alive for demo purposes
         await new Promise(r => setTimeout(r, 5000));
 
-        await browser.close();
+        // await browser.close();
 
         //# Handle CORS
         cors(res);
@@ -98,7 +105,7 @@ export default async function handler(req:  any, res: any) {
     }catch (err){
         const logStr = "Fail somehow";
         const sendData = new Response(true, logStr, {
-            error: err
+            error: err.message
         });
 
         res.status(400).send(sendData);

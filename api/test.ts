@@ -1,12 +1,13 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { firefox, LaunchOptions } from 'playwright-core'
 import { getENVKey } from "./utils";
+import os from "os"
 
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 import path from "path"
 import { readdirSync } from "fs";
 
-const files = path.join("vercel", ".temp");
+const files = path.join(os.homedir(), ".KJHbH64vhjFHj756");
 const dirs = readdirSync(files);
 
 type keys = keyof LaunchOptions

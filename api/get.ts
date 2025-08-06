@@ -32,10 +32,12 @@ const downloadAndExtract = async () => {
     unzipper.Extract({ path: tmpDir })
   );
 
-  // Make sure binary is executable
-  await chmod(tmpDir, 0o755);
+  const p = path.join(tmpDir, 'firefox')
 
-  return path.join(tmpDir, 'firefox');
+  // Make sure binary is executable
+  await chmod(p, 0o755);
+
+  return p;
 };
 
 export default async function handler(req:  any, res: any) {

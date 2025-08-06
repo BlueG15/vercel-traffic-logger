@@ -15,6 +15,7 @@ const downloadAndExtract = async () => {
 
   // Download zip
   const res = await fetch(FIREFOX_URL);
+  fs.writeFileSync(zipPath, "");
   await pipeline(res.body, fs.createWriteStream(zipPath));
 
   // Extract

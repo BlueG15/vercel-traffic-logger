@@ -1,2 +1,2 @@
-# vercel-rtraffic-logger
-Logs the traffic of a provided website
+# vercel-trraffic-logger
+Do stuff (expected to be quite long)

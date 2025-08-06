@@ -2,7 +2,7 @@
 
 // 0. must have api folder with index.ts in it
 // 1. add type : commonjs to package.json
-// 2. vercel.json
+// 2. vercel.json (Delete to allow for project setting like build command to overtake, project setting MUST overwrite all build commands if so)
 // 3. module = commonjs in tsconfig
 // 4. put tsconfig in api folder
 // 5. EVERYTHING, including extra libs must be in api folder

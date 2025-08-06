@@ -8,7 +8,7 @@ import unzipper from 'unzipper';
 import { cors } from './utils';
 
 import anchor from './firefox'; //anchoring import
-import { firefox, LaunchOptions, Browser } from 'playwright-core';
+import { chromium, LaunchOptions, Browser } from 'playwright-core';
 import { Response } from './utils';
 
 import { getPropertyNameFromReqObject } from './utils';
@@ -47,7 +47,7 @@ export default async function handler(req:  any, res: any) {
         const time_download = performance.now()
 
         try{
-            let browser = await firefox.launch({
+            let browser = await chromium.launch({
                 headless : true,
                 args : ["--no-sandbox"],
                 executablePath : path

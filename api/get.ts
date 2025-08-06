@@ -77,7 +77,7 @@ export default async function handler(req:  any, res: any) {
         await page.goto(url);
 
         // Keep the script alive for demo purposes
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, 5000));
 
         await browser.close();
 

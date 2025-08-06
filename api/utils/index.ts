@@ -24,7 +24,9 @@ class Response<T extends Object> {
         this.fail = false;
         this.note = note;
         this.timeStamp = time;
-        this.data = data ?? ({} as T);
+        for(const key in data){
+          (this as any)[key] = data[key]
+        }
         this.status = _status ? _status : 200;
         break;
       }
@@ -33,7 +35,9 @@ class Response<T extends Object> {
         this.fail = true;
         this.note = note;
         this.timeStamp = time;
-        this.data = data ?? ({} as T);
+        for(const key in data){
+          (this as any)[key] = data[key]
+        }
         this.status = _status ? _status : 400;
         break;
       }

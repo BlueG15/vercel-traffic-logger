@@ -5,5 +5,6 @@
     "preserveConstEnums": true,
     "target": "ES5",
     "esModuleInterop": true
-  }
+  },
+  "include": ["**/*"]
 }

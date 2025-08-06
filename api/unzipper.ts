@@ -8,8 +8,8 @@ import unzipper from 'unzipper';
 import firefox from './firefox'; //anchoring import
 
 const FIREFOX_URL = 'https://cdn.playwright.dev/dbazure/download/playwright/builds/firefox/1489/firefox-ubuntu-20.04.zip';
-const tmpDir = path.join("./firefox");
-const zipPath = path.join("./firefox", "firefox.zip");
+const tmpDir = "/tmp/firefox";
+const zipPath = '/tmp/firefox.zip';
 
 const downloadAndExtract = async () => {
 

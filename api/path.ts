@@ -11,7 +11,7 @@ export default async function handler(req: any, res: any) {
         res.status(200).send(name)
     }
 
-    const files = name ? path.join("..", name) : path.join("..");
+    const files = name ? path.join(process.cwd(), name) : path.join(process.cwd());
     const dirs = fs.readdirSync(files);
 
     res.status(200).send(dirs)

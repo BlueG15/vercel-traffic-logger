@@ -7,31 +7,15 @@ import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 import path from "path"
 import { readdirSync } from "fs";
 
-const files = path.join(os.homedir(), ".KJHbH64vhjFHj756");
-const dirs = readdirSync(files);
-
 type keys = keyof LaunchOptions
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-
-  let browser_path = ""
-  for(const d in dirs){
-    if(d.startsWith("firefox")){
-        browser_path = path.join(files, d)
-        break;
-    }
-  }
-
-  if(browser_path.length === 0){
-    res.status(500).send(`Browser not found somehow, dirs = ${JSON.stringify(dirs, null, 2)}`)
-  }
 
   try {
     const secret = getENVKey("BROWSER_LESS_KEY")
     const browser = await firefox.launch({
       headless : true,
       args : ["--no-sandbox"],
-      executablePath : browser_path
     })
 
     const context = await browser.newContext();

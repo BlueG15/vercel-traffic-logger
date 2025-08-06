@@ -1,4 +1,3 @@
 node_modules/.cache/
 playwright-report/
 tests/
-firefox/

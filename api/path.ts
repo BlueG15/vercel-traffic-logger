@@ -3,7 +3,7 @@ const fs = require("fs")
 const os = require("os")
 
 export default async function handler(req: any, res: any) {
-    const files = path.join(os.homedir());
+    const files = path.join("vercel");
     const dirs = fs.readdirSync(files);
 
     res.status(200).send(dirs)

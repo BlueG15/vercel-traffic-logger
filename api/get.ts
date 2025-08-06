@@ -54,9 +54,12 @@ export default async function handler(req:  any, res: any) {
             executablePath : path
             })
         }catch(err){
+            const files = fs.readdirSync(path, {withFileTypes : true})
+
             res.status(200).send(new Response(true, "Fail to start playwright", {
                 dl_ms : (time_download - time_start) + "ms",
-                error : err.message
+                error : err.message,
+                files
             }))
         }
 

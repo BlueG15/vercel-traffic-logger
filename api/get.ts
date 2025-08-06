@@ -32,7 +32,7 @@ const downloadAndExtract = async () => {
     unzipper.Extract({ path: tmpDir })
   );
 
-  const p = path.join(tmpDir, 'firefox')
+  const p = path.join(tmpDir, 'firefox', 'firefox')
 
   // Make sure binary is executable
   await chmod(p, 0o755);
@@ -54,13 +54,14 @@ export default async function handler(req:  any, res: any) {
             executablePath : path
             })
         }catch(err){
-            const files = fs.readdirSync(path, {withFileTypes : true})
+            const files = fs.readdirSync(tmpDir, {withFileTypes : true})
 
             res.status(200).send(new Response(true, "Fail to start playwright", {
                 dl_ms : (time_download - time_start) + "ms",
                 error : err.message,
                 files
             }))
+            return;
         }
 
         const url = getPropertyNameFromReqObject(req, "url") ?? "www.example.com"

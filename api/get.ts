@@ -98,7 +98,7 @@ export default async function handler(req:  any, res: any) {
     }catch (err){
         const logStr = "Fail somehow";
         const sendData = new Response(true, logStr, {
-            error: err.message
+            error: err
         });
 
         res.status(400).send(sendData);

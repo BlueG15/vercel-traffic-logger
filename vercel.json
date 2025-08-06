@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/unzipper.ts": {
+    "api/get.ts": {
       "maxDuration": 60
     }
   }

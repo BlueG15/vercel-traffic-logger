@@ -46,23 +46,11 @@ export default async function handler(req:  any, res: any) {
         const path = await downloadAndExtract();
         const time_download = performance.now()
 
-        let browser : Browser
-        try{
-            browser = await firefox.launch({
-            headless : true,
-            args : ["--no-sandbox"],
-            executablePath : path
+        let browser = await firefox.launch({
+                headless : true,
+                args : ["--no-sandbox"],
+                executablePath : path
             })
-        }catch(err){
-            const files = fs.readdirSync(tmpDir, {withFileTypes : true})
-
-            res.status(200).send(new Response(true, "Fail to start playwright", {
-                dl_ms : (time_download - time_start) + "ms",
-                error : err.message,
-                files
-            }))
-            return;
-        }
 
         const url = getPropertyNameFromReqObject(req, "url") ?? "www.example.com"
         const match = getPropertyNameFromReqObject(req, "match") ?? "*"

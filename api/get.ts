@@ -98,7 +98,7 @@ cs.on("log", (...t) => {
 const options =  {
     runScripts: "dangerously" as const,
     pretendToBeVisual: true,
-    resources : new RLoader__({
+    resources : new jsdom.ResourceLoader({
         strictSSL: false,
     }),
     virtualConsole : cs

@@ -1,21 +1,23 @@
 {
-  "name": "nodejs",
+  "name": "vercel-traffic-logger",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.ts",
-  "type": "commonjs",
+  "description": "Do stuff (expected to be quite long)",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "vercel dev"
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@blu:BlueG15/vercel-traffic-logger.git"
   },
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
   "dependencies": {
-    "@types/node": "^22.9.0",
-    "@vercel/node": "^2.9.6",
-    "cors": "^2.8.5",
-    "nodejs": "file:",
-    "playwright-core": "^1.54.2",
-    "unzipper": "^0.12.3"
+    "@vercel/node": "^5.3.11",
+    "fs": "^0.0.1-security",
+    "jsdom": "^26.1.0"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7"
   }
 }

@@ -105,6 +105,15 @@ class DOM__ extends JSDOM {
   }
 }
 
+class RLoader__ extends jsdom.ResourceLoader {
+  override fetch(url: string, options: jsdom.FetchOptions): jsdom.AbortablePromise<Buffer> | null {
+    if (options.element) {
+      totalLogs.push(`Element ${options.element.localName} is requesting the url ${url}`);
+    }
+    return super.fetch(url, options);
+  }
+}
+
 const totalLogs = []
 const captured = []
 const cs = new jsdom.VirtualConsole();
@@ -115,7 +124,7 @@ cs.on("log", (...t) => {
 const options =  {
     runScripts: "dangerously" as const,
     pretendToBeVisual: true,
-    resources : new jsdom.ResourceLoader({
+    resources : new RLoader__({
         strictSSL: false,
     }),
     virtualConsole : cs

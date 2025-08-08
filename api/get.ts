@@ -105,7 +105,7 @@ class DOM__ extends JSDOM {
   }
 }
 
-class RLoader__ extends jsdom.ResourceLoader {
+class RLoader__ extends jsdom.ResourceLoader { 
   override fetch(url: string, options: jsdom.FetchOptions): jsdom.AbortablePromise<Buffer> | null {
     if (options.element) {
       totalLogs.push(`Element ${options.element.localName} is requesting the url ${url}`);

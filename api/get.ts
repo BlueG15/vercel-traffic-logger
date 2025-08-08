@@ -105,8 +105,12 @@ class DOM__ extends JSDOM {
   }
 }
 
+const totalLogs = []
 const captured = []
 const cs = new jsdom.VirtualConsole();
+cs.on("log", (...t) => {
+    totalLogs.push(...t)
+})
 
 const options =  {
     runScripts: "dangerously" as const,
@@ -131,7 +135,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if(typeof a.__url === "string" && (!Capture || a.__url.includes(Capture))) captured.push(a)
     })
 
-
     const dom = DOM__.fromURL(
         url, options, InsertionPoint
     );
@@ -142,7 +145,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.setHeader("Cache-Control", "max-age=3600, public");
         res.setHeader("vary", "Accept");
         
-        res.status(200).json(new Response(false, `Captured: ${captured.length}`, { url : url, captured  }))
+        res.status(200).json(new Response(false, `Captured: ${captured.length}`, { url : url, captured, totalLogs  }))
     }, Timeout)
 
   } catch (err) {

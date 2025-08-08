@@ -91,12 +91,12 @@ class DOM__ extends JSDOM {
 
             let splitPoint = body.indexOf(InsertionPoint);
             if(splitPoint !== -1){
-            splitPoint += 8
-            console.log("Found split point, inserting fetch polyfill")
-            const p1 = body.slice(0, splitPoint);
-            const p2 = body.slice(splitPoint);
-            console.log("Fetch file loaded: ", Insertion.slice(0, 50))
-            body = p1 + `<script>${Insertion}</script><script>console.log("Fetch-polyfill inserted")</script>` + p2
+                splitPoint += InsertionPoint.length
+                totalLogs.push("Found split point, inserting fetch polyfill")
+                const p1 = body.slice(0, splitPoint);
+                const p2 = body.slice(splitPoint);
+                totalLogs.push("Fetch file loaded: ", Insertion.slice(0, 50))
+                body = p1 + `<script>${Insertion}</script><script>console.log("Fetch-polyfill inserted")</script>` + p2
             }
 
             return new JSDOM(body, options);

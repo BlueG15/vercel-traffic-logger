@@ -73,7 +73,7 @@ class DOM__ extends JSDOM {
                 const p1 = body.slice(0, splitPoint);
                 const p2 = body.slice(splitPoint);
                 totalLogs.push("Fetch file loaded: ", Insertion.slice(0, 50))
-                body = p1 + `<script>${Insertion}</script><script>console.log("Fetch-polyfill inserted, test: ", typeof fetch, fetch.length)</script>` + p2
+                body = p1 + `<script>${Insertion}</script><script>console.log(\`Fetch-polyfill inserted, test: \${typeof fetch}, \${fetch.length}\`)</script>` + p2
             }
 
             return new JSDOM(body, options);
@@ -123,7 +123,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (options.element) {
             totalLogs.push(`Element ${options.element.localName} is requesting the url ${url}`);
         }
-        return f(url, options);
+        try{
+            return f(url, options);
+        }catch(e){
+            totalLogs.push(`Fetch unsuccessful for url ${url}`)
+            return null
+        }
     }
 
     cs.on("info", (a) => {

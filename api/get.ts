@@ -4,7 +4,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 import fs from "fs"
 
-import {} from "./fetch-polyfill"
+import {default as __f} from "./utils/fetch-polyfill"
 
 function normalizeFromURLOptions(options : any) {
   // Checks on options that are invalid for `fromURL`
@@ -96,7 +96,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if(!url) throw new Error("Please provide an url")
 
     const files = fs.readdirSync("./api");
-    throw new Error(files.join("--"))
+    throw new Error(files.join("--")  + "__" + __f.toString())
 
     const InsertionPoint : string | undefined = getPropertyNameFromReqObject(req, "InsertionPoint", undefined);
     const Capture : string | undefined = getPropertyNameFromReqObject(req, "Capture", undefined);

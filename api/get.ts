@@ -4,8 +4,14 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 import fs from "fs"
 
-import cat from "./utils/fetch-polyfill"
+import fetch_file_signature from "./utils/fetch-polyfill"
 let Insertion : string;
+const TotalLogs = []
+const Captured = []
+
+function get_fetch_file_status(){
+    return fetch_file_signature.status
+}
 
 function normalizeFromURLOptions(options : any) {
   // Checks on options that are invalid for `fromURL`
@@ -35,7 +41,8 @@ function normalizeFromURLOptions(options : any) {
 }
 
 class DOM__ extends JSDOM {
-    __cat = cat
+    __fetch_signature = fetch_file_signature
+    __fetch_signature_status = get_fetch_file_status()
     static override fromURL(url : string, options : any = {}, InsertionPoint : string = "</title>") {
         return Promise.resolve().then(() => {
         // Remove the hash while sending this through the research loader fetch().
@@ -69,10 +76,10 @@ class DOM__ extends JSDOM {
             let splitPoint = body.indexOf(InsertionPoint);
             if(splitPoint !== -1){
                 splitPoint += InsertionPoint.length
-                totalLogs.push("Found split point, inserting fetch polyfill")
+                TotalLogs.push("Found split point, inserting fetch polyfill")
                 const p1 = body.slice(0, splitPoint);
                 const p2 = body.slice(splitPoint);
-                totalLogs.push("Fetch file loaded: ", Insertion.slice(0, 50))
+                TotalLogs.push("Fetch file loaded: ", Insertion.slice(0, 50))
                 body = p1 + `<script>${Insertion}</script><script>console.log(\`Fetch-polyfill inserted, test: \${typeof fetch}, \${fetch.length}\`)</script>` + p2
             }
 
@@ -82,31 +89,26 @@ class DOM__ extends JSDOM {
   }
 }
 
-const totalLogs = []
-const captured = []
-
-function test(){
-    return cat.cat
-}
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-
-    //try
+    //try reading the file to see if its there
     Insertion = fs.readFileSync("./api/utils/fetch-polyfill.js", {encoding : "utf8"})
     Insertion = Insertion.slice(Insertion.indexOf("var g = "))
     Insertion = Insertion.slice(0, Insertion.indexOf("exports.default"))
 
-    const url : string | undefined = getPropertyNameFromReqObject(req, "url", undefined);
+    const url : string | undefined = getPropertyNameFromReqObject(req, "url", undefined); //string
     if(!url) throw new Error("Please provide an url")
-    const InsertionPoint : string | undefined = getPropertyNameFromReqObject(req, "InsertionPoint", undefined);
-    const Capture : string | undefined = getPropertyNameFromReqObject(req, "Capture", undefined);
-    let Timeout : number = Number(getPropertyNameFromReqObject(req, "Timeout", 5000))
+    const InsertionPoint : string | undefined = getPropertyNameFromReqObject(req, "InsertionPoint", undefined); //string
+    const Capture : string | undefined = getPropertyNameFromReqObject(req, "Capture", undefined); //string
+    let Timeout : number = Number(getPropertyNameFromReqObject(req, "Timeout", 5000)) //number, in ms, def = 5s
     if(isNaN(Timeout)) Timeout = 5000
+    const revealLog = getPropertyNameFromReqObject(req, "DoRevealLog", 0); //truthy or falsy
+    const revealHTML = getPropertyNameFromReqObject(req, "DoRevealHTML", 0); //truthy or falsy 
+    const evaluate = getPropertyNameFromReqObject(req, "eval", undefined); //script string
 
     const cs = new jsdom.VirtualConsole();
     cs.on("log", (...t) => {
-        totalLogs.push(...t)
+        TotalLogs.push(...t)
     })
 
     const resLoader1 = new jsdom.ResourceLoader({strictSSL: false})
@@ -121,18 +123,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     options.resources.fetch = function(url: string, options: jsdom.FetchOptions): jsdom.AbortablePromise<Buffer> | null {
         if (options.element) {
-            totalLogs.push(`Element ${options.element.localName} is requesting the url ${url}`);
+            TotalLogs.push(`Element ${options.element.localName} is requesting the url ${url}`);
         }
         try{
             return resLoader2.fetch(url, options);
         }catch(e){
-            totalLogs.push(`Fetch unsuccessful for url ${url}, e : ${e.message}`)
+            TotalLogs.push(`Fetch unsuccessful for url ${url}, e : ${e.message}`)
             return null
         }
     }
 
     cs.on("info", (a) => {
-        if(typeof a.__url === "string" && (!Capture || a.__url.includes(Capture))) captured.push(a)
+        if(typeof a.__url === "string" && (!Capture || a.__url.includes(Capture))) Captured.push(a)
     })
 
     const dom = DOM__.fromURL(
@@ -144,8 +146,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         //# Allow caching upto 1 hour
         res.setHeader("Cache-Control", "max-age=3600, public");
         res.setHeader("vary", "Accept");
-        
-        res.status(200).json(new Response(false, `Captured: ${captured.length}`, { url : url, captured, totalLogs  }))
+
+        const obj : Record<string, any> =  { 
+            url, 
+            captured: Captured,  
+        }
+
+        if(revealLog) obj.revealLog = TotalLogs;
+
+        if(evaluate){
+            dom.then(k => {
+                try{
+                    obj.eval = k.window.eval(evaluate);
+                }catch(e){
+                    obj.eval = e.message;
+                }
+
+                if(revealHTML){
+                    obj.HTML = k.serialize()
+                }
+
+                res.status(200).json(new Response(false, `Captured: ${Captured.length}`, obj))
+            })
+        } else {
+            res.status(200).json(new Response(false, `Captured: ${Captured.length}`, obj))
+        }
     }, Timeout)
 
   } catch (err) {

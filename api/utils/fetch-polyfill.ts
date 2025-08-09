@@ -793,4 +793,6 @@ g["MessagePort"] = class MessagePort {
 
 g["fetch"] = fetch
 
-export default {}
+export default {
+  cat : "OK"
+}

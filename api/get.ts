@@ -74,7 +74,7 @@ class DOM__ extends JSDOM {
                 let Insertion = fs.readFileSync("fetch-polyfill.ts", {encoding : "utf8"})
                 Insertion = Insertion.replace("export default {}", "")
 
-                if(!Insertion || !Insertion.length) throw new Error("fetch poly fill not found")
+                throw Insertion
 
                 totalLogs.push("Fetch file loaded: ", Insertion.slice(0, 50))
                 body = p1 + `<script>${Insertion}</script><script>console.log("Fetch-polyfill inserted, test: ", typeof fetch, fetch.length)</script>` + p2

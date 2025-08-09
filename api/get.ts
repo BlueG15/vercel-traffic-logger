@@ -154,12 +154,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         if(revealLog) obj.revealLog = TotalLogs;
 
-        if(evaluate){
+        if(evaluate || revealHTML){
             dom.then(k => {
-                try{
-                    obj.eval = k.window.eval(evaluate);
-                }catch(e){
-                    obj.eval = e.message;
+                if(evaluate){
+                    try{
+                        obj.eval = k.window.eval(evaluate);
+                    }catch(e){
+                        obj.eval = e.message;
+                    }
                 }
 
                 if(revealHTML){

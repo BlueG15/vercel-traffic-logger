@@ -34,6 +34,7 @@ function normalizeFromURLOptions(options : any) {
 }
 
 class DOM__ extends JSDOM {
+    __cat = cat
     static override fromURL(url : string, options : any = {}, InsertionPoint : string = "</title>") {
         return Promise.resolve().then(() => {
         // Remove the hash while sending this through the research loader fetch().
@@ -89,16 +90,18 @@ class DOM__ extends JSDOM {
 const totalLogs = []
 const captured = []
 
+function test(){
+    return cat.cat
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const url : string | undefined = getPropertyNameFromReqObject(req, "url", undefined);
     if(!url) throw new Error("Please provide an url")
 
-
     const files = fs.readdirSync("./api/utils")
-    // const read = fs.readFileSync("./api/utils/fetch-polyfill.js", {encoding : "utf8"})
-    throw new Error(files.join("-") + cat)
+    const read = fs.readFileSync("./api/utils/fetch-polyfill.js", {encoding : "utf8"})
+    throw new Error(files.join("-") + read)
 
     const InsertionPoint : string | undefined = getPropertyNameFromReqObject(req, "InsertionPoint", undefined);
     const Capture : string | undefined = getPropertyNameFromReqObject(req, "Capture", undefined);

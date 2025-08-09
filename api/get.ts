@@ -97,8 +97,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 
     const files = fs.readdirSync("./api/utils")
-    const read = fs.readFileSync("./api/utils/fetch-polyfill.js", {encoding : "utf8"})
-    throw new Error(files.join("-") + read)
+    // const read = fs.readFileSync("./api/utils/fetch-polyfill.js", {encoding : "utf8"})
+    throw new Error(files.join("-"))
 
     const InsertionPoint : string | undefined = getPropertyNameFromReqObject(req, "InsertionPoint", undefined);
     const Capture : string | undefined = getPropertyNameFromReqObject(req, "Capture", undefined);

@@ -109,24 +109,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         totalLogs.push(...t)
     })
 
+    const resLoader1 = new jsdom.ResourceLoader({strictSSL: false})
+    const resLoader2 = new jsdom.ResourceLoader({strictSSL: false})
+
     const options =  {
         runScripts: "dangerously" as const,
         pretendToBeVisual: true,
-        resources : new jsdom.ResourceLoader({
-            strictSSL: false,
-        }),
+        resources : resLoader1,
         virtualConsole : cs
     }
 
-    const f = options.resources.fetch 
     options.resources.fetch = function(url: string, options: jsdom.FetchOptions): jsdom.AbortablePromise<Buffer> | null {
         if (options.element) {
             totalLogs.push(`Element ${options.element.localName} is requesting the url ${url}`);
         }
         try{
-            return f(url, options);
+            return resLoader2.fetch(url, options);
         }catch(e){
-            totalLogs.push(`Fetch unsuccessful for url ${url}`)
+            totalLogs.push(`Fetch unsuccessful for url ${url}, e : ${e.message}`)
             return null
         }
     }

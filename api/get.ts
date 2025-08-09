@@ -4,7 +4,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 import fs from "fs"
 
-import {default as __f} from "./utils/fetch-polyfill"
+import {} from "./utils/fetch-polyfill"
 
 function normalizeFromURLOptions(options : any) {
   // Checks on options that are invalid for `fromURL`

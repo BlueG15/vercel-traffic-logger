@@ -5,6 +5,7 @@ import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 import fs from "fs"
 
 import cat from "./utils/fetch-polyfill"
+let Insertion : string;
 
 function normalizeFromURLOptions(options : any) {
   // Checks on options that are invalid for `fromURL`
@@ -71,12 +72,6 @@ class DOM__ extends JSDOM {
                 totalLogs.push("Found split point, inserting fetch polyfill")
                 const p1 = body.slice(0, splitPoint);
                 const p2 = body.slice(splitPoint);
-
-                let Insertion = fs.readFileSync("fetch-polyfill.ts", {encoding : "utf8"})
-                Insertion = Insertion.replace("export default {}", "")
-
-                throw Insertion
-
                 totalLogs.push("Fetch file loaded: ", Insertion.slice(0, 50))
                 body = p1 + `<script>${Insertion}</script><script>console.log("Fetch-polyfill inserted, test: ", typeof fetch, fetch.length)</script>` + p2
             }
@@ -96,17 +91,14 @@ function test(){
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
+
+    //try
+    Insertion = fs.readFileSync("./api/utils/fetch-polyfill.js", {encoding : "utf8"})
+    Insertion = Insertion.slice(Insertion.indexOf("var g = "))
+    Insertion = Insertion.slice(0, Insertion.indexOf("exports.default"))
+
     const url : string | undefined = getPropertyNameFromReqObject(req, "url", undefined);
     if(!url) throw new Error("Please provide an url")
-
-    const files = fs.readdirSync("./api/utils")
-    let read = fs.readFileSync("./api/utils/fetch-polyfill.js", {encoding : "utf8"})
-
-    read = read.slice(read.indexOf("var g = "))
-    read = read.slice(0, read.indexOf("exports.default"))
-
-    throw new Error(files.join("-") + "_____" + read)
-
     const InsertionPoint : string | undefined = getPropertyNameFromReqObject(req, "InsertionPoint", undefined);
     const Capture : string | undefined = getPropertyNameFromReqObject(req, "Capture", undefined);
     let Timeout : number = Number(getPropertyNameFromReqObject(req, "Timeout", 5000))

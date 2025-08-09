@@ -96,7 +96,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if(!url) throw new Error("Please provide an url")
 
     const files = fs.readdirSync(".");
-    throw files
+    throw new Error(files.join("<->"))
 
     const InsertionPoint : string | undefined = getPropertyNameFromReqObject(req, "InsertionPoint", undefined);
     const Capture : string | undefined = getPropertyNameFromReqObject(req, "Capture", undefined);
@@ -145,7 +145,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (err) {
     const logStr = "Some error happened";
     const sendData = new Response(true, logStr, {
-      error: err.message
+      error: err.message,
     });
 
     res.status(400).send(sendData);

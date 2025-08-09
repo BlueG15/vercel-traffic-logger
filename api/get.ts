@@ -79,15 +79,6 @@ class DOM__ extends JSDOM {
   }
 }
 
-class RLoader__ extends jsdom.ResourceLoader { 
-  override fetch(url: string, options: jsdom.FetchOptions): jsdom.AbortablePromise<Buffer> | null {
-    if (options.element) {
-      totalLogs.push(`Element ${options.element.localName} is requesting the url ${url}`);
-    }
-    return super.fetch(url, options);
-  }
-}
-
 const totalLogs = []
 const captured = []
 
@@ -110,10 +101,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const options =  {
         runScripts: "dangerously" as const,
         pretendToBeVisual: true,
-        resources : new RLoader__({
+        resources : new jsdom.ResourceLoader({
             strictSSL: false,
         }),
         virtualConsole : cs
+    }
+
+    const f = options.resources.fetch 
+    options.resources.fetch = function(url: string, options: jsdom.FetchOptions): jsdom.AbortablePromise<Buffer> | null {
+        if (options.element) {
+            totalLogs.push(`Element ${options.element.localName} is requesting the url ${url}`);
+        }
+        return f(url, options);
     }
 
     cs.on("info", (a) => {

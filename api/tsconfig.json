@@ -5,6 +5,6 @@
     "preserveConstEnums": true,
     "target": "ES5",
     "esModuleInterop": true,
-    "allowJs": true
+    "allowSyntheticDefaultImports": true
   },
 }

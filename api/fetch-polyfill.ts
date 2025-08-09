@@ -4,7 +4,7 @@ var g =
   (typeof self !== 'undefined' && self) ||
   // eslint-disable-next-line no-undef
   (typeof global !== 'undefined' && global) ||
-  {}
+  new Object({})
 
 var support = {
   searchParams: 'URLSearchParams' in g,
@@ -83,7 +83,7 @@ function iteratorFor(items) {
   return iterator
 }
 
-function Headers(headers) {
+function __Headers(headers) {
   this.map = {}
 
   if (headers instanceof Headers) {
@@ -104,31 +104,31 @@ function Headers(headers) {
   }
 }
 
-Headers.prototype.append = function(name, value) {
+__Headers.prototype.append = function(name, value) {
   name = normalizeName(name)
   value = normalizeValue(value)
   var oldValue = this.map[name]
   this.map[name] = oldValue ? oldValue + ', ' + value : value
 }
 
-Headers.prototype['delete'] = function(name) {
+__Headers.prototype['delete'] = function(name) {
   delete this.map[normalizeName(name)]
 }
 
-Headers.prototype.get = function(name) {
+__Headers.prototype.get = function(name) {
   name = normalizeName(name)
   return this.has(name) ? this.map[name] : null
 }
 
-Headers.prototype.has = function(name) {
+__Headers.prototype.has = function(name) {
   return this.map.hasOwnProperty(normalizeName(name))
 }
 
-Headers.prototype.set = function(name, value) {
+__Headers.prototype.set = function(name, value) {
   this.map[normalizeName(name)] = normalizeValue(value)
 }
 
-Headers.prototype.forEach = function(callback, thisArg) {
+__Headers.prototype.forEach = function(callback, thisArg) {
   for (var name in this.map) {
     if (this.map.hasOwnProperty(name)) {
       callback.call(thisArg, this.map[name], name, this)
@@ -136,7 +136,7 @@ Headers.prototype.forEach = function(callback, thisArg) {
   }
 }
 
-Headers.prototype.keys = function() {
+__Headers.prototype.keys = function() {
   var items = []
   this.forEach(function(value, name) {
     items.push(name)
@@ -144,7 +144,7 @@ Headers.prototype.keys = function() {
   return iteratorFor(items)
 }
 
-Headers.prototype.values = function() {
+__Headers.prototype.values = function() {
   var items = []
   this.forEach(function(value) {
     items.push(value)
@@ -152,7 +152,7 @@ Headers.prototype.values = function() {
   return iteratorFor(items)
 }
 
-Headers.prototype.entries = function() {
+__Headers.prototype.entries = function() {
   var items = []
   this.forEach(function(value, name) {
     items.push([name, value])
@@ -161,8 +161,9 @@ Headers.prototype.entries = function() {
 }
 
 if (support.iterable) {
-  Headers.prototype[Symbol.iterator] = Headers.prototype.entries
+  __Headers.prototype[Symbol.iterator] = __Headers.prototype.entries
 }
+g["Headers"] = __Headers
 
 function consumed(body) {
   if (body._noBody) return
@@ -347,7 +348,7 @@ function normalizeMethod(method) {
   return methods.indexOf(upcased) > -1 ? upcased : method
 }
 
-function Request(input, options) {
+function __Request(input, options) {
   if (!(this instanceof Request)) {
     throw new TypeError('Please use the "new" operator, this DOM object constructor cannot be called as a function.')
   }
@@ -367,9 +368,12 @@ function Request(input, options) {
     this.method = input.method
     this.mode = input.mode
     this.signal = input.signal
-    if (!body && input._bodyInit != null) {
-      body = input._bodyInit
-      input.bodyUsed = true
+    if (!body && input["_bodyInit"] != null) {
+      body = input["_bodyInit"]
+      const __temp_f = function(){
+        return "bodyUsed"
+      }
+      input[__temp_f()] = true
     }
   } else {
     this.url = String(input)
@@ -410,9 +414,11 @@ function Request(input, options) {
   }
 }
 
-Request.prototype.clone = function() {
+__Request.prototype.clone = function() {
   return new Request(this, {body: this._bodyInit})
 }
+
+g["Request"] = __Request
 
 function decode(body) {
   var form = new FormData()
@@ -483,19 +489,30 @@ function Response(bodyInit, options) {
 Body.call(Response.prototype)
 
 Response.prototype.clone = function() {
-  return new Response(this._bodyInit, {
-    status: this.status,
-    statusText: this.statusText,
-    headers: new Headers(this.headers),
-    url: this.url
-  })
+  const __temp_f = function(){
+    return new Object({
+      status: this.status,
+      statusText: this.statusText,
+      headers: new Headers(this.headers),
+      url : this.url
+    })
+  }
+  return new Response(this._bodyInit, __temp_f())
 }
 
 Response.error = function() {
+  const __temp_f = function(a){
+    switch(a){
+      case 1 : return String("ok")
+      case 2 : return String("status")
+    }
+    return String("type")
+  }
+
   var response = new Response(null, {status: 200, statusText: ''})
-  response.ok = false
-  response.status = 0
-  response.type = 'error'
+  response[__temp_f(1)] = false
+  response[__temp_f(2)] = 0
+  response[__temp_f(3)] = 'error'
   return response
 }
 
@@ -506,21 +523,20 @@ Response.redirect = function(url, status) {
     throw new RangeError('Invalid status code')
   }
 
-  return new Response(null, {status: status, headers: {location: url}})
+  return new Response(null, {status: status, headers: {location: String(url)}})
 }
 
-var DOMException = g.DOMException
 try {
-  new DOMException()
+  new g["DOMException"]()
 } catch (err) {
-  DOMException = function(message, name) {
+  g["DOMException"] = function(message, name) {
     this.message = message
     this.name = name
     var error = Error(message)
     this.stack = error.stack
   }
-  DOMException.prototype = Object.create(Error.prototype)
-  DOMException.prototype.constructor = DOMException
+  g["DOMException"].prototype = Object.create(Error.prototype)
+  g["DOMException"].prototype.constructor = ["DOMException"]
 }
 
 function fetch(input, init) {
@@ -546,18 +562,18 @@ function fetch(input, init) {
       // This check if specifically for when a user fetches a file locally from the file system
       // Only if the status is out of a normal range
       if (request.url.indexOf('file://') === 0 && (xhr.status < 200 || xhr.status > 599)) {
-        options.status = 200;
+        options["status"] = 200;
       } else {
-        options.status = xhr.status;
+        options["status"] = xhr.status;
       }
-      options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL')
-      var body = 'response' in xhr ? xhr.response : xhr.responseText
+      options["url"] = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL')
+      var body = 'response' in xhr ? xhr.response : xhr["responseText"]
 
       const reader = new FileReader();
       reader.onload = function () {
         try {
           const text = reader.result;
-          const json = JSON.parse(text);
+          const json = JSON.parse(String(text));
           json.__url = String(input)
           console.info(json);
         } catch (err) {
@@ -598,7 +614,7 @@ function fetch(input, init) {
 
     function fixUrl(url) {
       try {
-        return url === '' && g.location.href ? g.location.href : url
+        return url === '' && g["location"].href ? g["location"].href : url
       } catch (e) {
         return url
       }
@@ -622,7 +638,7 @@ function fetch(input, init) {
       }
     }
 
-    if (init && typeof init.headers === 'object' && !(init.headers instanceof Headers || (g.Headers && init.headers instanceof g.Headers))) {
+    if (init && typeof init.headers === 'object' && !(init.headers instanceof Headers || (g["Headers"] && init.headers instanceof g["Headers"]))) {
       var names = [];
       Object.getOwnPropertyNames(init.headers).forEach(function(name) {
         names.push(normalizeName(name))
@@ -650,21 +666,21 @@ function fetch(input, init) {
       }
     }
 
-    xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
+    xhr.send(typeof request["_bodyInit"] === 'undefined' ? null : request["_bodyInit"])
   })
 }
 
 fetch.polyfill = true
 
-globalThis.ResizeObserver = class ResizeObserver {
+g["ResizeObserver"] = class ResizeObserver {
     observe(){}
     disconnect(){}
     unobserve(){}
 }
 
-globalThis.TextEncoder = class TextEncoder {
+g["TextEncoder"] = class TextEncoder {
   constructor() {
-    this.encoding = "utf-8";
+    this["encoding"] = "utf-8";
   }
   encode(input = "") {
     input = String(input);
@@ -710,52 +726,52 @@ globalThis.TextEncoder = class TextEncoder {
   }
 };
 
-globalThis.MessageChannel = class MessageChannel {
+g["MessageChannel"] = class MessageChannel {
   constructor() {
     // Create two ports
     const port1 = new MessagePort();
     const port2 = new MessagePort();
 
     // Link ports
-    port1._entangledPort = port2;
-    port2._entangledPort = port1;
+    port1["_entangledPort"] = port2;
+    port2["_entangledPort"] = port1;
 
-    this.port1 = port1;
-    this.port2 = port2;
+    this["port1"] = port1;
+    this["port2"] = port2;
   }
 };
 
-globalThis.MessagePort = class MessagePort {
+g["MessagePort"] = class MessagePort {
   constructor() {
-    this.onmessage = null;
-    this._entangledPort = null;
-    this._closed = false;
-    this._queue = [];
-    this._dispatching = false;
+    this[".onmessage"] = null;
+    this["._entangledPort"] = null;
+    this["._closed"] = false;
+    this["._queue"] = [];
+    this["._dispatching"] = false;
   }
 
   postMessage(message) {
-    if (this._closed || !this._entangledPort || this._entangledPort._closed) return;
+    if (this["_closed"] || !this["_entangledPort"] || this["_entangledPort"]._closed) return;
     // Simulate async message delivery
-    const event = { data: message, target: this._entangledPort };
-    this._entangledPort._queue.push(event);
-    if (!this._entangledPort._dispatching) {
-      this._entangledPort._dispatching = true;
+    const event = { data: message, target: this["_entangledPort"] };
+    this["_entangledPort"]._queue.push(event);
+    if (!this["_entangledPort"]._dispatching) {
+      this["_entangledPort"]._dispatching = true;
       setTimeout(() => {
         let evt;
-        while ((evt = this._entangledPort._queue.shift())) {
-          if (typeof this._entangledPort.onmessage === "function") {
-            this._entangledPort.onmessage(evt);
+        while ((evt = this["_entangledPort"]._queue.shift())) {
+          if (typeof this["_entangledPort"].onmessage === "function") {
+            this["_entangledPort"].onmessage(evt);
           }
         }
-        this._entangledPort._dispatching = false;
+        this["_entangledPort"]._dispatching = false;
       }, 0);
     }
   }
 
   close() {
-    this._closed = true;
-    this._entangledPort = null;
+    this["_closed"] = true;
+    this["_entangledPort"] = null;
   }
 
   start() {
@@ -764,22 +780,17 @@ globalThis.MessagePort = class MessagePort {
 
   addEventListener(type, listener) {
     if (type === "message") {
-      this.onmessage = listener;
+      this["onmessage"] = listener;
     }
   }
 
   removeEventListener(type, listener) {
-    if (type === "message" && this.onmessage === listener) {
-      this.onmessage = null;
+    if (type === "message" && this["onmessage"] === listener) {
+      this["onmessage"] = null;
     }
   }
 }
 
-if (!g.fetch) {
-  g.fetch = fetch
-  g.Headers = Headers
-  g.Request = Request
-  g.Response = Response
-}
+g["fetch"] = fetch
 
-exports.default = {}
+export default {}

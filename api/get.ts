@@ -4,7 +4,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Response, cors, getPropertyNameFromReqObject } from "./utils";
 import fs from "fs"
 
-import "./fetch-polyfill"
+import {} from "./fetch-polyfill"
 
 function normalizeFromURLOptions(options : any) {
   // Checks on options that are invalid for `fromURL`
@@ -71,7 +71,8 @@ class DOM__ extends JSDOM {
                 const p1 = body.slice(0, splitPoint);
                 const p2 = body.slice(splitPoint);
 
-                const Insertion = fs.readFileSync("fetch-polyfill.js", {encoding : "utf8"})
+                let Insertion = fs.readFileSync("fetch-polyfill.js", {encoding : "utf8"})
+                Insertion = Insertion.replace("export default {}", "")
 
                 totalLogs.push("Fetch file loaded: ", Insertion.slice(0, 50))
                 body = p1 + `<script>${Insertion}</script><script>console.log("Fetch-polyfill inserted, test: ", typeof fetch, fetch.length)</script>` + p2

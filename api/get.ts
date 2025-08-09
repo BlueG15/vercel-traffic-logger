@@ -90,19 +90,7 @@ class RLoader__ extends jsdom.ResourceLoader {
 
 const totalLogs = []
 const captured = []
-const cs = new jsdom.VirtualConsole();
-cs.on("log", (...t) => {
-    totalLogs.push(...t)
-})
 
-const options =  {
-    runScripts: "dangerously" as const,
-    pretendToBeVisual: true,
-    resources : new RLoader__({
-        strictSSL: false,
-    }),
-    virtualConsole : cs
-}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
@@ -113,6 +101,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const Capture : string | undefined = getPropertyNameFromReqObject(req, "Capture", undefined);
     let Timeout : number = Number(getPropertyNameFromReqObject(req, "Timeout", 5000))
     if(isNaN(Timeout)) Timeout = 5000
+
+    const cs = new jsdom.VirtualConsole();
+    cs.on("log", (...t) => {
+        totalLogs.push(...t)
+    })
+
+    const options =  {
+        runScripts: "dangerously" as const,
+        pretendToBeVisual: true,
+        resources : new RLoader__({
+            strictSSL: false,
+        }),
+        virtualConsole : cs
+    }
 
     cs.on("info", (a) => {
         if(typeof a.__url === "string" && (!Capture || a.__url.includes(Capture))) captured.push(a)

@@ -7,7 +7,7 @@ import fs from "fs"
 import fetch_file_signature from "./utils/fetch-polyfill"
 let Insertion : string;
 const TotalLogs = []
-const Captured = []
+const CapturedArr = []
 
 function get_fetch_file_status(){
     return fetch_file_signature.status
@@ -89,6 +89,10 @@ class DOM__ extends JSDOM {
   }
 }
 
+function InsertCapture(a : any, Capture? : string){
+    if(typeof a.__url === "string" && (!Capture || a.__url.includes(Capture))) CapturedArr.push(a)
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     //try reading the file to see if its there
@@ -98,8 +102,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const url : string | undefined = getPropertyNameFromReqObject(req, "url", undefined); //string
     if(!url) throw new Error("Please provide an url")
+
+    try{
+        const test = fetch(url)
+    }catch(e){
+        throw new Error(`Invalid url, messagge = ${(e as Error).message}`)
+    }
+    
     const InsertionPoint : string | undefined = getPropertyNameFromReqObject(req, "InsertionPoint", undefined); //string
-    const Capture : string | undefined = getPropertyNameFromReqObject(req, "Capture", undefined); //string
+    const CaptureStr : string | undefined = getPropertyNameFromReqObject(req, "Capture", undefined); //string
     let Timeout : number = Number(getPropertyNameFromReqObject(req, "Timeout", 5000)) //number, in ms, def = 5s
     if(isNaN(Timeout)) Timeout = 5000
     const revealLog = getPropertyNameFromReqObject(req, "DoRevealLog", 0); //truthy or falsy
@@ -126,15 +137,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             TotalLogs.push(`Element ${options.element.localName} is requesting the url ${url}`);
         }
         try{
-            return resLoader2.fetch(url, options);
+            const res = resLoader2.fetch(url, options);
+            res.then((val) => {
+                const body = String(val);
+                InsertCapture({
+                    __url : url,
+                    body
+                }, CaptureStr)
+            })
+            return res;
         }catch(e){
             TotalLogs.push(`Fetch unsuccessful for url ${url}, e : ${e.message}`)
             return null
         }
     }
 
-    cs.on("info", (a) => {
-        if(typeof a.__url === "string" && (!Capture || a.__url.includes(Capture))) Captured.push(a)
+    cs.on("info", (a : any) => {
+        InsertCapture(a, CaptureStr)
     })
 
     const dom = DOM__.fromURL(
@@ -149,7 +168,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const obj : Record<string, any> =  { 
             url, 
-            captured: Captured,  
+            captured: CapturedArr,  
         }
 
         if(revealLog) obj.revealLog = TotalLogs;
@@ -168,10 +187,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     obj.HTML = k.serialize()
                 }
 
-                res.status(200).json(new Response(false, `Captured: ${Captured.length}`, obj))
+                res.status(200).json(new Response(false, `Captured: ${CapturedArr.length}`, obj))
             })
         } else {
-            res.status(200).json(new Response(false, `Captured: ${Captured.length}`, obj))
+            res.status(200).json(new Response(false, `Captured: ${CapturedArr.length}`, obj))
         }
     }, Timeout)
 

@@ -28,12 +28,10 @@ type Params = {
     // Whether to return internal loggings or not
     // This contains all console.log made in the loaded page
     // Default : false
-    // Note : The value will be coersed to bool
     DoRevealLog? : boolean,
 
     // Whether to return the loaded HTML or not
     // Default : false
-    // Note : The value will be coersed to bool
     DoRevealHTML? : boolean,
 
     // Advanced options
@@ -75,6 +73,8 @@ type Response = {
         __url : string,
         [...key : string] : any,
     }[],
+    revealLog : string[], //Only appears if DoRevealLog = 1
+    HTML : string, //Only appears if DoRevealHTML = 1
     status : number,
 }
 ```

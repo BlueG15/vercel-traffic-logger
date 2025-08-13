@@ -742,6 +742,9 @@ g["MessageChannel"] = class MessageChannel {
 };
 
 g["MessagePort"] = class MessagePort {
+  get MessagePort() {
+    return this
+  }
   constructor() {
     this[".onmessage"] = null;
     this["._entangledPort"] = null;
